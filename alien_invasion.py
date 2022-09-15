@@ -31,10 +31,17 @@ class AlienInvasion:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:  # если клавиша нажата (DOWN)
-                if event.key == pygame.K_RIGHT:  # если нажата клавиша "стрелка вправо"
-                    self.ship.moving_right = True  # активируется непрерывное движение вправо
+                if event.key == pygame.K_RIGHT:  # если нажата стрелка вправо
+                    self.ship.moving_right = True  # непрерывное движение вправо
+                if event.key == pygame.K_LEFT:  # если нажата стрелка влево
+                    self.ship.moving_left = True  # непрерывное движение влево
+            
             elif event.type == pygame.KEYUP:  # если клавиша отпущена (UP)
-                self.ship.moving_right = False  # остановка движения
+                if event.key == pygame.K_RIGHT:
+                    self.ship.moving_right = False  # остановка движения вправо
+                if event.key == pygame.K_LEFT:
+                    self.ship.moving_left = False  # остановка движения влево
+
 
 
     def _update_screen(self):
