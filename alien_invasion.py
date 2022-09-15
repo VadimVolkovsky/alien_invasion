@@ -43,10 +43,10 @@ class AlienInvasion:
             self.ship.moving_right = True  # непрерывное движение вправо
         elif event.key == pygame.K_LEFT:  # если нажата стрелка влево
             self.ship.moving_left = True  # непрерывное движение влево
-        elif event.key == pygame.K_UP:
-            self.ship.moving_up = True
-        elif event.key == pygame.K_DOWN:
-            self.ship.moving_down = True
+        # elif event.key == pygame.K_UP:  # движение вверх
+        #     self.ship.moving_up = True
+        # elif event.key == pygame.K_DOWN:  # движение вниз
+        #     self.ship.moving_down = True
         elif event.key == pygame.K_q:
             sys.exit()
         
@@ -55,10 +55,10 @@ class AlienInvasion:
             self.ship.moving_right = False  # остановка движения вправо
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False  # остановка движения влево
-        elif event.key == pygame.K_UP:
-            self.ship.moving_up = False
-        elif event.key == pygame.K_DOWN:
-            self.ship.moving_down = False
+        # elif event.key == pygame.K_UP:  # остановка движения вверх
+        #     self.ship.moving_up = False
+        # elif event.key == pygame.K_DOWN:  # остановка движения вниз
+        #     self.ship.moving_down = False
 
 
 
