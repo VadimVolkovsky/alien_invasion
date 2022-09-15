@@ -6,6 +6,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 from person import Person
 
 
@@ -22,6 +23,8 @@ class AlienInvasion():
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)  # Создаем экземпляр Ship
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()  # Создаем флот
         self.person = Person(self.screen)  # Создаем экземпляр person
 
     def run_game(self):
@@ -79,13 +82,41 @@ class AlienInvasion():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)  #  Удаление снарядов вышедших за край экрана
 
+    def _create_fleet(self):
+        """Создание флота пришельцев"""
+        alien = Alien(self)  # Создание одного пришельца
+        alien_width, alien_height = alien.rect.size  # ширина и высота пришельца
+        availabale_space_x = self.settings.screen_width - (2 * alien_width)  # Доступное пространство по горизонтали
+        number_aliens_x = availabale_space_x // (2 * alien_width)  # сколько пришельцев влезает по горизонтали
+        
+        #  Определяет кол-во рядом помещающихся на экране
+        ship_height = self.ship.rect.height
+        available_space_y = (self.settings.screen_height -
+                             (3 * alien_width) - ship_height)
+        number_rows = available_space_y // (2 * alien_height)
+        for row_number in range(number_rows):
+            for alien_number in range(number_aliens_x):  # создание первого ряда пришельцев
+                self._create_alien(alien_number, row_number)
+
+
+    def _create_alien(self, alien_number, row_number):
+        """Создание пришельца и размещение его в ряду"""
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        alien.x = alien_width + 2 * alien_width * alien_number
+        alien.rect.x = alien.x
+        alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
+        self.aliens.add(alien)
+
+            
     def _update_screen(self):
         """Обновляет изображения на экране и отображает новый экран"""
-        self.screen.fill(self.settings.bg_color)
+        self.screen.fill(self.settings.bg_color)  # цвет фона экрана
         self.ship.blitme()
-        #self.person.blitme()
+        # self.person.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        self.aliens.draw(self.screen)  # рисуем пришельца
         pygame.display.flip()
     
     
