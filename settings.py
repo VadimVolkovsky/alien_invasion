@@ -16,3 +16,4 @@ class Settings():
         self.fleet_drop_speed = 10
         # Fleet direction = 1 обозначет движение вправо; а -1 обозначает влево
         self.fleet_direction = 1
+        self.meteor_speed = 1

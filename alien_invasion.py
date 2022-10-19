@@ -9,6 +9,7 @@ from bullet import Bullet
 from alien import Alien
 from person import Person
 from star import Star
+from meteor import Meteor
 
 
 class AlienInvasion():
@@ -26,18 +27,20 @@ class AlienInvasion():
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.stars = pygame.sprite.Group()
-        #self.star = Star(self)
+        self.meteors = pygame.sprite.Group()
         self._create_fleet()  # Создаем флот
+        self._create_skystar()  # Создаем звездное небо 
+        self._create_meteor_rain()  # создаем метеоритный дождь
         self.person = Person(self.screen)  # Создаем экземпляр person
 
     def run_game(self):
         """Запуск основного цикла игры"""
-        self._create_skystar()
         while True:
             self._check_events()
             self.ship.update()
             self._update_bullets()
             self._update_aliens()
+            self._update_meteors()
             self._update_screen()
     
 
@@ -86,7 +89,7 @@ class AlienInvasion():
         self.bullets.update()  # Обновление позиции снарядов
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
-                self.bullets.remove(bullet)  #  Удаление снарядов вышедших за край экрана
+                self.bullets.remove(bullet)  # Удаление снарядов вышедших за край экрана
 
     def _update_aliens(self):
         """
@@ -96,17 +99,46 @@ class AlienInvasion():
         self._check_fleet_edges()
         self.aliens.update()
 
+    def _update_meteors(self):
+        self.meteors.update()  # Обновление позиции метеоров
+        for meteor in self.meteors.copy():
+            if meteor.rect.top >= self.settings.screen_height:
+                self.meteors.remove(meteor)  #  Удаление метеоров вышедших за край экрана
+                print(len(self.meteors))
+        if len(self.meteors) == 0:  # повторный запуск метеоров
+            self._create_meteor_rain()
+
+    def _create_meteor_rain(self):
+        meteor = Meteor(self)  # Создание метеора
+        meteor_width, meteor_height = meteor.rect.size  #  Ширина и высота метеора
+        available_space_x = self.settings.screen_width - (2 * meteor_width)  # доступное пространство по оси х
+        number_meteors_x = available_space_x // (2 * meteor_width)  # сколько метеоров влезает по оси х
+        available_space_y = (self.settings.screen_height -
+                             (3 * meteor_height))
+        number_rows = available_space_y // (2 * meteor_height)
+        for row_number in range(number_rows):
+            for meteor_number in range(number_meteors_x):
+                self._create_meteor(meteor_number, row_number)
+    
+    def _create_meteor(self, meteor_number, row_number):
+        """Создает метеор и размещает его в ряду"""
+        meteor = Meteor(self)
+        meteor_width, meteor_height = meteor.rect.size
+        meteor.x = meteor_width + 2 * meteor_width * meteor_number
+        meteor.rect.x = meteor.x
+        self.meteors.add(meteor)
+
     def _create_fleet(self):
         """Создание флота пришельцев"""
         alien = Alien(self)  # Создание одного пришельца
         alien_width, alien_height = alien.rect.size  # ширина и высота пришельца
-        availabale_space_x = self.settings.screen_width - (2 * alien_width)  # Доступное пространство по горизонтали
-        number_aliens_x = availabale_space_x // (2 * alien_width)  # сколько пришельцев влезает по горизонтали
+        available_space_x = self.settings.screen_width - (2 * alien_width)  # Доступное пространство по горизонтали
+        number_aliens_x = available_space_x // (2 * alien_width)  # сколько пришельцев влезает по горизонтали
         
         #  Определяет кол-во рядом помещающихся пришельцев на экране
         ship_height = self.ship.rect.height
         available_space_y = (self.settings.screen_height -
-                             (3 * alien_width) - ship_height)
+                             (3 * alien_height) - ship_height)
         number_rows = available_space_y // (2 * alien_height)
         for row_number in range(number_rows):
             for alien_number in range(number_aliens_x):  # создание первого ряда пришельцев
@@ -141,7 +173,7 @@ class AlienInvasion():
         availiable_space_x = self.settings.screen_width - (2 * star_width)
         number_stars_x = availiable_space_x // (2 * star_width)
         availiable_space_y = (self.settings.screen_height -
-                              (3 * star_width))
+                              (3 * star_height))
         number_rows = availiable_space_y // (2 * star_height)
         for _ in range(number_rows):
             for _ in range(number_stars_x):
@@ -161,6 +193,7 @@ class AlienInvasion():
         self.stars.draw(self.screen)  # Рисуем звездное небо
         self.ship.blitme()  # Рисуем корабль
         self.aliens.draw(self.screen)  # рисуем пришельца
+        self.meteors.draw(self.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         pygame.display.flip()
