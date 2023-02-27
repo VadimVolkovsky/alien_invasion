@@ -16,7 +16,7 @@
 Клонировать репозиторий:
 
 ```
-git clone <ssh link>
+git clone git@github.com:VadimVolkovsky/alien_invasion.git
 ```
 
 Установить и активировать виртуальное окружение:
